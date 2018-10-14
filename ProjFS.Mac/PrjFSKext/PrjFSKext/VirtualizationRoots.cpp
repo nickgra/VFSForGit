@@ -396,11 +396,11 @@ VirtualizationRootResult VirtualizationRoot_RegisterProviderForPath(PrjFSProvide
         vnode_put(virtualizationRootVNode);
     }
     
-    if (rootIndex >= 0)
-    {
-        VirtualizationRoot* root = &s_virtualizationRoots[rootIndex];
-        vfs_setauthcache_ttl(vnode_mount(root->rootVNode), 0);
-    }
+//    if (rootIndex >= 0)
+//    {
+//        VirtualizationRoot* root = &s_virtualizationRoots[rootIndex];
+//        vfs_setauthcache_ttl(vnode_mount(root->rootVNode), 0);
+//    }
     
     vfs_context_rele(vfsContext);
     
