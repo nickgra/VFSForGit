@@ -3,6 +3,7 @@
 
 #include <sys/param.h>
 #include "PrjFSCommon.h"
+#include "FsidInode.h"
 
 typedef enum
 {
@@ -14,6 +15,7 @@ typedef enum
     
     // Messages from kernel to user mode
     MessageType_KtoU_EnumerateDirectory,
+    MessageType_KtoU_RecursivelyEnumerateDirectory,
     MessageType_KtoU_HydrateFile,
     
     MessageType_KtoU_NotifyFileModified,
@@ -38,6 +40,9 @@ struct MessageHeader
     // The message type indicates the type of request or response
     uint32_t            messageType; // values of type MessageType
     
+    // fsid and inode of the file
+    FsidInode           fsidInode;
+    
     // For messages from kernel to user mode, indicates the PID of the process that initiated the I/O
     int32_t             pid;
     char                procname[MAXCOMLEN + 1];
@@ -58,6 +63,7 @@ void Message_Init(
     MessageHeader* header,
     uint64_t messageId,
     MessageType messageType,
+    const FsidInode& fsidInode,
     int32_t pid,
     const char* procname,
     const char* path);

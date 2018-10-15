@@ -77,7 +77,7 @@ namespace GVFS.FunctionalTests.Tests.EnlistmentPerFixture
             this.Enlistment.WaitForBackgroundOperations().ShouldEqual(true, "Background operations failed to complete.");
 
             GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, folderName + "/");
-            GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, folderName + "/" + fileName);
+            GVFSHelpers.ModifiedPathsShouldNotContain(this.fileSystem, this.Enlistment.DotGVFSRoot, folderName + "/" + fileName);
         }
 
         [TestCase, Order(4)]
@@ -88,7 +88,6 @@ namespace GVFS.FunctionalTests.Tests.EnlistmentPerFixture
             string renamedFolderName = "folder3b";
             string[] expectedModifiedEntries =
             {
-                folderName + "/",
                 renamedFolderName + "/",
             };
 
@@ -99,6 +98,7 @@ namespace GVFS.FunctionalTests.Tests.EnlistmentPerFixture
             this.Enlistment.WaitForBackgroundOperations().ShouldEqual(true, "Background operations failed to complete.");
 
             GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, expectedModifiedEntries);
+            GVFSHelpers.ModifiedPathsShouldNotContain(this.fileSystem, this.Enlistment.DotGVFSRoot, folderName + "/");
         }
 
         [TestCase, Order(5)]
@@ -110,9 +110,15 @@ namespace GVFS.FunctionalTests.Tests.EnlistmentPerFixture
             string[] fileNames = { "a", "b", "c" };
             string[] expectedModifiedEntries =
             {
+                renamedFolderName + "/",
+            };
+
+            string[] unexpectedModifiedEntries =
+            {
                 renamedFolderName + "/" + fileNames[0],
                 renamedFolderName + "/" + fileNames[1],
                 renamedFolderName + "/" + fileNames[2],
+                folderName + "/",
                 folderName + "/" + fileNames[0],
                 folderName + "/" + fileNames[1],
                 folderName + "/" + fileNames[2],
@@ -122,7 +128,7 @@ namespace GVFS.FunctionalTests.Tests.EnlistmentPerFixture
             this.fileSystem.CreateDirectory(this.Enlistment.GetVirtualPathTo(folderName));
             foreach (string fileName in fileNames)
             {
-                string filePath = folderName + "\\" + fileName;
+                string filePath = Path.Combine(folderName, fileName);
                 this.fileSystem.CreateEmptyFile(this.Enlistment.GetVirtualPathTo(filePath));
                 this.Enlistment.GetVirtualPathTo(filePath).ShouldBeAFile(this.fileSystem);
             }
@@ -132,28 +138,30 @@ namespace GVFS.FunctionalTests.Tests.EnlistmentPerFixture
             this.Enlistment.WaitForBackgroundOperations().ShouldEqual(true, "Background operations failed to complete.");
 
             GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, expectedModifiedEntries);
+            GVFSHelpers.ModifiedPathsShouldNotContain(this.fileSystem, this.Enlistment.DotGVFSRoot, unexpectedModifiedEntries);
         }
 
         [TestCase, Order(6)]
         [Category(Categories.MacTODO.M2)]
         public void CaseOnlyRenameOfNewFolderKeepsModifiedPathsEntries()
         {
-            string[] expectedModifiedPathsEntries =
+            if (this.fileSystem is PowerShellRunner)
             {
-                "Folder/",
-                "Folder/testfile",
-            };
+                Assert.Ignore("Powershell does not support case only renames.");
+            }
 
             this.fileSystem.CreateDirectory(Path.Combine(this.Enlistment.RepoRoot, "Folder"));
             this.fileSystem.CreateEmptyFile(Path.Combine(this.Enlistment.RepoRoot, "Folder", "testfile"));
             this.Enlistment.WaitForBackgroundOperations().ShouldEqual(true, "Background operations failed to complete.");
 
-            GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, expectedModifiedPathsEntries);
+            GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, "Folder/");
+            GVFSHelpers.ModifiedPathsShouldNotContain(this.fileSystem, this.Enlistment.DotGVFSRoot, "Folder/testfile");
 
             this.fileSystem.RenameDirectory(this.Enlistment.RepoRoot, "Folder", "folder");
             this.Enlistment.WaitForBackgroundOperations().ShouldEqual(true, "Background operations failed to complete.");
 
-            GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, expectedModifiedPathsEntries);
+            GVFSHelpers.ModifiedPathsShouldContain(this.fileSystem, this.Enlistment.DotGVFSRoot, "folder/");
+            GVFSHelpers.ModifiedPathsShouldNotContain(this.fileSystem, this.Enlistment.DotGVFSRoot, "folder/testfile");
         }
 
         [TestCase, Order(7)]

@@ -89,10 +89,14 @@ namespace GVFS.FunctionalTests.Tools
             return CloneAndMount(pathToGvfs, enlistmentRoot, null, localCache, skipPrefetch);
         }
 
-        public static GVFSFunctionalTestEnlistment CloneAndMount(string pathToGvfs, string commitish = null, string localCacheRoot = null)
+        public static GVFSFunctionalTestEnlistment CloneAndMount(
+            string pathToGvfs,
+            string commitish = null,
+            string localCacheRoot = null,
+            bool skipPrefetch = false)
         {
             string enlistmentRoot = GVFSFunctionalTestEnlistment.GetUniqueEnlistmentRoot();
-            return CloneAndMount(pathToGvfs, enlistmentRoot, commitish, localCacheRoot);
+            return CloneAndMount(pathToGvfs, enlistmentRoot, commitish, localCacheRoot, skipPrefetch);
         }
 
         public static GVFSFunctionalTestEnlistment CloneAndMountEnlistmentWithSpacesInPath(string pathToGvfs, string commitish = null)
@@ -197,9 +201,9 @@ namespace GVFS.FunctionalTests.Tools
             return this.gvfsProcess.Prefetch(args, failOnError);
         }
 
-        public void Repair()
+        public void Repair(bool confirm)
         {
-            this.gvfsProcess.Repair();
+            this.gvfsProcess.Repair(confirm);
         }
 
         public string Diagnose()
@@ -207,9 +211,9 @@ namespace GVFS.FunctionalTests.Tools
             return this.gvfsProcess.Diagnose();
         }
 
-        public string Status()
+        public string Status(string trace = null)
         {
-            return this.gvfsProcess.Status();
+            return this.gvfsProcess.Status(trace);
         }
 
         public bool WaitForBackgroundOperations(int maxWaitMilliseconds = DefaultMaxWaitMSForStatusCheck)

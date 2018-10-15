@@ -324,24 +324,28 @@ namespace GVFS.FunctionalTests.Windows.Tests
             this.Enlistment.MountGVFS();
             this.Enlistment.UnmountGVFS();
 
-            string expectedModifiedPaths = @"A .gitattributes
-A developer/me/
-A developer/me/JLANGE9._prerazzle
-A developer/me/StateSwitch.Save
-A tools/x86/remote.exe
-A tools/x86/runelevated.exe
-A tools/amd64/remote.exe
-A tools/amd64/runelevated.exe
-A tools/perllib/MS/TraceLogging.dll
-A tools/managed/v2.0/midldd.CheckedInExe
-A tools/managed/v4.0/sdapi.dll
-A tools/managed/v2.0/midlpars.dll
-A tools/managed/v2.0/RPCDataSupport.dll
-A tools/managed/v2.0/MidlStaticAnalysis.dll
-A tools/perllib/MS/Somefile.txt
-";
+            string[] expectedModifiedPaths =
+                {
+                    "A .gitattributes",
+                    "A developer/me/",
+                    "A tools/x86/remote.exe",
+                    "A tools/x86/runelevated.exe",
+                    "A tools/amd64/remote.exe",
+                    "A tools/amd64/runelevated.exe",
+                    "A tools/perllib/MS/TraceLogging.dll",
+                    "A tools/managed/v2.0/midldd.CheckedInExe",
+                    "A tools/managed/v4.0/sdapi.dll",
+                    "A tools/managed/v2.0/midlpars.dll",
+                    "A tools/managed/v2.0/RPCDataSupport.dll",
+                    "A tools/managed/v2.0/MidlStaticAnalysis.dll",
+                    "A tools/perllib/MS/Somefile.txt",
+                };
 
-            modifiedPathsDatabasePath.ShouldBeAFile(this.fileSystem).WithContents(expectedModifiedPaths);
+            modifiedPathsDatabasePath.ShouldBeAFile(this.fileSystem);
+            this.fileSystem.ReadAllText(modifiedPathsDatabasePath)
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .OrderBy(x => x)
+                .ShouldMatchInOrder(expectedModifiedPaths.OrderBy(x => x));
 
             this.ValidatePersistedVersionMatchesCurrentVersion();
         }
@@ -361,14 +365,14 @@ A tools/perllib/MS/Somefile.txt
             this.fileSystem.DeleteDirectory(Path.Combine(this.Enlistment.RepoRoot, "GVFS\\GVFS.Tests\\Properties"));
 
             string junctionTarget = Path.Combine(this.Enlistment.EnlistmentRoot, "DirJunction");
-            string symlinkTarget = Path.Combine(this.Enlistment.EnlistmentRoot, "DirSymlink");
+            string symLinkTarget = Path.Combine(this.Enlistment.EnlistmentRoot, "DirSymLink");
             Directory.CreateDirectory(junctionTarget);
-            Directory.CreateDirectory(symlinkTarget);
+            Directory.CreateDirectory(symLinkTarget);
 
             string junctionLink = Path.Combine(this.Enlistment.RepoRoot, "DirJunction");
-            string symlink = Path.Combine(this.Enlistment.RepoRoot, "DirLink");
+            string symLink = Path.Combine(this.Enlistment.RepoRoot, "DirLink");
             ProcessHelper.Run("CMD.exe", "/C mklink /J " + junctionLink + " " + junctionTarget);
-            ProcessHelper.Run("CMD.exe", "/C mklink /D " + symlink + " " + symlinkTarget);
+            ProcessHelper.Run("CMD.exe", "/C mklink /D " + symLink + " " + symLinkTarget);
 
             string target = Path.Combine(this.Enlistment.EnlistmentRoot, "GVFS", "GVFS", "GVFS.UnitTests");
             string link = Path.Combine(this.Enlistment.RepoRoot, "UnitTests");

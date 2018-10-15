@@ -21,7 +21,7 @@ namespace GVFS.FunctionalTests.Tests.MultiEnlistmentTests
 
         // This branch and commit sha should point to the same place.
         private const string WellKnownBranch = "FunctionalTests/20170602";
-        private const string WellKnownCommitSha = "79dc4233df4d9a7e053662bff95df498f640022e";
+        private const string WellKnownCommitSha = "42eb6632beffae26893a3d6e1a9f48d652327c6f";
 
         private string localCachePath;
         private string localCacheParentPath;
@@ -68,7 +68,7 @@ namespace GVFS.FunctionalTests.Tests.MultiEnlistmentTests
             enlistment.UnmountGVFS();
 
             // Repair on a healthy enlistment should succeed
-            enlistment.Repair();
+            enlistment.Repair(confirm: true);
 
             string blobSizesRoot = GVFSHelpers.GetPersistedBlobSizesRoot(enlistment.DotGVFSRoot).ShouldNotBeNull();
             string blobSizesDbPath = Path.Combine(blobSizesRoot, "BlobSizes.sql");
@@ -76,7 +76,7 @@ namespace GVFS.FunctionalTests.Tests.MultiEnlistmentTests
             this.fileSystem.WriteAllText(blobSizesDbPath, "0000");
 
             enlistment.TryMountGVFS().ShouldEqual(false, "GVFS shouldn't mount when blob size db is corrupt");
-            enlistment.Repair();
+            enlistment.Repair(confirm: true);
             enlistment.MountGVFS();
         }
 
@@ -96,7 +96,7 @@ namespace GVFS.FunctionalTests.Tests.MultiEnlistmentTests
             enlistment1.Status().ShouldContain("Mount status: Ready");
             enlistment2.Status().ShouldContain("Mount status: Ready");
         }
-        
+
         [TestCase]
         public void ParallelReadsInASharedCache()
         {
@@ -265,7 +265,26 @@ namespace GVFS.FunctionalTests.Tests.MultiEnlistmentTests
             newObjectsRoot.ShouldContain(newCacheKey);
             newObjectsRoot.ShouldBeADirectory(this.fileSystem);
 
-            this.AlternatesFileShouldHaveGitObjectsRoot(enlistment);            
+            this.AlternatesFileShouldHaveGitObjectsRoot(enlistment);
+        }
+
+        [TestCase]
+        public void SecondCloneSucceedsWithMissingTrees()
+        {
+            string newCachePath = Path.Combine(this.localCacheParentPath, ".customGvfsCache2");
+            GVFSFunctionalTestEnlistment enlistment1 = this.CreateNewEnlistment(localCacheRoot: newCachePath, skipPrefetch: true);
+            File.ReadAllText(Path.Combine(enlistment1.RepoRoot, WellKnownFile));
+            this.AlternatesFileShouldHaveGitObjectsRoot(enlistment1);
+
+            // This Git command loads the commit and root tree for WellKnownCommitSha,
+            // but does not download any more reachable objects.
+            string command = "cat-file -p origin/" + WellKnownBranch + "^{tree}";
+            ProcessResult result = GitHelpers.InvokeGitAgainstGVFSRepo(enlistment1.RepoRoot, command);
+            result.ExitCode.ShouldEqual(0, $"git {command} failed with error: " + result.Errors);
+
+            // If we did not properly check the failed checkout at this step, then clone will fail during checkout.
+            GVFSFunctionalTestEnlistment enlistment2 = this.CreateNewEnlistment(localCacheRoot: newCachePath, branch: WellKnownBranch, skipPrefetch: true);
+            File.ReadAllText(Path.Combine(enlistment2.RepoRoot, WellKnownFile));
         }
 
         // Override OnTearDownEnlistmentsDeleted rathern than using [TearDown] as the enlistments need to be unmounted before
