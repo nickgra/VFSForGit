@@ -21,9 +21,9 @@ namespace GVFS.CommandLine
         private const string PrefetchCommitsAndTreesLock = "prefetch-commits-trees.lock";
 
         private const int ChunkSize = 4000;
-        private static readonly int SearchThreadCount = Environment.ProcessorCount;
-        private static readonly int DownloadThreadCount = Environment.ProcessorCount;
-        private static readonly int IndexThreadCount = Environment.ProcessorCount;
+        private static readonly int SearchThreadCount = 4;
+        private static readonly int DownloadThreadCount = 4;
+        private static readonly int IndexThreadCount = 4;
 
         [Option(
             "files",
