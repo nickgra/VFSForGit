@@ -1,4 +1,3 @@
-// !$*UTF8*$!
 {
 	archiveVersion = 1;
 	classes = {
@@ -37,12 +36,9 @@
 /* Begin PBXFileReference section */
 		4A440DDD2093AD3300AADA76 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		4A8A1BED20A0D5940024BC10 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-<<<<<<< HEAD
 		4AE434AD211C955700E1AACF /* IODataQueueClient.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = IODataQueueClient.c; sourceTree = "<group>"; };
-=======
 		4A91E084215E76A90079FE1B /* kext-perf-tracing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "kext-perf-tracing.cpp"; sourceTree = "<group>"; };
 		4A91E085215E76A90079FE1B /* kext-perf-tracing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "kext-perf-tracing.hpp"; sourceTree = "<group>"; };
->>>>>>> origin/master
 		C6C780C4207FC6AB00E7E054 /* libPrjFSLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libPrjFSLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6C780CF20816BDC00E7E054 /* PrjFSLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrjFSLib.h; sourceTree = "<group>"; };
 		C6C780D020816BDC00E7E054 /* PrjFSLib.cpp */ = {isa = PBXFileReference; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrjFSLib.cpp; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; };
