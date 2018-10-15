@@ -9,12 +9,9 @@
 /* Begin PBXBuildFile section */
 		4A440DDE2093AD3300AADA76 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A440DDD2093AD3300AADA76 /* IOKit.framework */; };
 		4A8A1BEE20A0D5940024BC10 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A8A1BED20A0D5940024BC10 /* CoreFoundation.framework */; };
-<<<<<<< HEAD
 		4AE434AF211C955700E1AACF /* IODataQueueClient.c in Sources */ = {isa = PBXBuildFile; fileRef = 4AE434AD211C955700E1AACF /* IODataQueueClient.c */; };
 		4AE434B0211C955700E1AACF /* IODataQueueClient.c in Sources */ = {isa = PBXBuildFile; fileRef = 4AE434AD211C955700E1AACF /* IODataQueueClient.c */; };
-=======
 		4A91E086215E76A90079FE1B /* kext-perf-tracing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A91E084215E76A90079FE1B /* kext-perf-tracing.cpp */; };
->>>>>>> origin/master
 		C6C780D120816BDC00E7E054 /* PrjFSLib.h in Headers */ = {isa = PBXBuildFile; fileRef = C6C780CF20816BDC00E7E054 /* PrjFSLib.h */; };
 		C6C780D220816BDC00E7E054 /* PrjFSLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6C780D020816BDC00E7E054 /* PrjFSLib.cpp */; };
 		D308478120B4431200F69E92 /* prjfs-log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D308478020B4431200F69E92 /* prjfs-log.cpp */; };
