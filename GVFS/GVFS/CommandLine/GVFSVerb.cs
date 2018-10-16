@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security;
 
 namespace GVFS.CommandLine
@@ -738,6 +739,12 @@ You can specify a URL, a name of a configured cache server, or the special names
 
                 this.PreCreateEnlistment();
                 GVFSEnlistment enlistment = this.CreateEnlistment(this.EnlistmentRootPathParameter);
+                int resultCode = SetRLimit();
+                if (resultCode != 0)
+                {
+                    int errno = Marshal.GetLastWin32Error();
+                    this.ReportErrorAndExit("SetRLimit failed with error code " + errno);
+                }
                 this.Execute(enlistment);
             }
 
@@ -770,6 +777,26 @@ You can specify a URL, a name of a configured cache server, or the special names
 
                 RepoMetadata.Shutdown();
             }
+
+            private int SetRLimit()
+            {
+                //#define OPEN_MAX        10240   /* max open files per process - todo, make a config option? */
+                rlimit ourRlimit;
+                ourRlimit.rlim_cur = 10240;
+                ourRlimit.rlim_max = 10240;
+                //#define   RLIMIT_NOFILE   8       /* number of open files */
+                return SetRLimitInternal(8, ref ourRlimit);
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct rlimit
+            {
+                public long rlim_cur;
+                public long rlim_max;
+            }
+
+            [DllImport("libc", EntryPoint = "setrlimit", SetLastError = true)]
+            private static extern int SetRLimitInternal(int resource, ref rlimit rlp);
 
             private void InitializeCachePathsFromRepoMetadata(
                 ITracer tracer,
