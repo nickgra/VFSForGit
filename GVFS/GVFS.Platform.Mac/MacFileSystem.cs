@@ -41,10 +41,7 @@ namespace GVFS.Platform.Mac
 
         public bool HydrateFile(ITracer activity, string fileName, byte[] buffer)
         {
-            bool output = NativeFileReader.TryReadFirstByteOfFile(fileName, buffer);
-            int errno = Marshal.GetLastWin32Error();
-            activity.RelatedError("Failed to read " + fileName);
-            activity.RelatedError("Errno is: " + errno);
+            bool output = NativeFileReader.TryReadFirstByteOfFile(activity, fileName, buffer);
             return output;
         }
 
@@ -58,18 +55,27 @@ namespace GVFS.Platform.Mac
         {
             private const int ReadOnly = 0x0000;
 
-            public static bool TryReadFirstByteOfFile(string fileName, byte[] buffer)
+            public static bool TryReadFirstByteOfFile(ITracer activity, string fileName, byte[] buffer)
             {
                 int fileDescriptor = Open(fileName, ReadOnly);
-                return TryReadOneByte(fileDescriptor, buffer);
+                if (fileDescriptor == -1)
+                {
+                    int errno = Marshal.GetLastWin32Error();
+                    activity.RelatedError("Failed to open() " + fileName);
+                    activity.RelatedError("Errno is: " + errno);
+                }
+                return TryReadOneByte(activity, fileDescriptor, buffer);
             }
 
-            private static bool TryReadOneByte(int fileDescriptor, byte[] buffer)
+            private static bool TryReadOneByte(ITracer activity, int fileDescriptor, byte[] buffer)
             {
                 int numBytes = Read(fileDescriptor, buffer, 1);
 
                 if (numBytes == -1)
                 {
+                    int errno = Marshal.GetLastWin32Error();
+                    activity.RelatedError("Failed to read() " + fileDescriptor);
+                    activity.RelatedError("Errno is: " + errno);
                     return false;
                 }
 
