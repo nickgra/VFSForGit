@@ -1,5 +1,6 @@
 ﻿using GVFS.Common;
 using GVFS.Common.FileSystem;
+using GVFS.Common.Tracing;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -38,9 +39,13 @@ namespace GVFS.Platform.Mac
             return MacFileSystem.TryGetNormalizedPathImplementation(path, out normalizedPath, out errorMessage);
         }
 
-        public bool HydrateFile(string fileName, byte[] buffer)
+        public bool HydrateFile(ITracer activity, string fileName, byte[] buffer)
         {
-            return NativeFileReader.TryReadFirstByteOfFile(fileName, buffer);
+            bool output = NativeFileReader.TryReadFirstByteOfFile(fileName, buffer);
+            int errno = Marshal.GetLastWin32Error();
+            activity.RelatedError("Failed to read " + fileName);
+            activity.RelatedError("Errno is: " + errno);
+            return output;
         }
 
         [DllImport("libc", EntryPoint = "chmod", SetLastError = true)]

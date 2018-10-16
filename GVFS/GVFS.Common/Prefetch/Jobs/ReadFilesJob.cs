@@ -40,7 +40,7 @@ namespace GVFS.Common.Prefetch.Jobs
                 {
                     foreach (string path in this.blobIdToPaths[blobId])
                     {
-                        bool succeeded = GVFSPlatform.Instance.FileSystem.HydrateFile(path, buffer);
+                        bool succeeded = GVFSPlatform.Instance.FileSystem.HydrateFile(activity, path, buffer);
                         if (succeeded)
                         {
                             Interlocked.Increment(ref this.readFileCount);
@@ -48,8 +48,6 @@ namespace GVFS.Common.Prefetch.Jobs
                         }
                         else
                         {
-                            activity.RelatedError("Failed to read " + path);
-
                             failedFilesCurrentThread++;
                             this.HasFailures = true;
                         }

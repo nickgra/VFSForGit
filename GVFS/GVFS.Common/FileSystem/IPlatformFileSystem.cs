@@ -1,4 +1,6 @@
-﻿namespace GVFS.Common.FileSystem
+﻿using GVFS.Common.Tracing;
+
+namespace GVFS.Common.FileSystem
 {
     public interface IPlatformFileSystem
     {
@@ -8,6 +10,6 @@
         void CreateHardLink(string newLinkFileName, string existingFileName);
         bool TryGetNormalizedPath(string path, out string normalizedPath, out string errorMessage);
         void ChangeMode(string path, int mode);
-        bool HydrateFile(string fileName, byte[] buffer);
+        bool HydrateFile(ITracer activity, string fileName, byte[] buffer);
     }
 }
