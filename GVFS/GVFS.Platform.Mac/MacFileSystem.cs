@@ -64,6 +64,8 @@ namespace GVFS.Platform.Mac
                     activity.RelatedError("Failed to open() " + fileName);
                     activity.RelatedError("Errno is: " + errno);
                 }
+
+                Close(fileDescriptor);
                 return TryReadOneByte(activity, fileDescriptor, buffer);
             }
 
@@ -84,6 +86,9 @@ namespace GVFS.Platform.Mac
 
             [DllImport("libc", EntryPoint = "open", SetLastError = true)]
             private static extern int Open(string path, int flag);
+
+            [DllImport("libc", EntryPoint = "close", SetLastError = true)]
+            public static extern int Close(int fd);
 
             [DllImport("libc", EntryPoint = "read", SetLastError = true)]
             private static extern int Read(int fd, [Out] byte[] buf, int count);
