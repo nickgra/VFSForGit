@@ -1,5 +1,4 @@
-﻿using GVFS.Common;
-using GVFS.Common.Git;
+﻿using GVFS.Common.Git;
 using System.IO;
 
 namespace GVFS.Platform.Mac

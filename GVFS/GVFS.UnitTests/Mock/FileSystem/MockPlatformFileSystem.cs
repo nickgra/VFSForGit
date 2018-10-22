@@ -1,4 +1,5 @@
 ﻿using GVFS.Common.FileSystem;
+using GVFS.Common.Tracing;
 using System;
 
 namespace GVFS.UnitTests.Mock.FileSystem
@@ -35,6 +36,11 @@ namespace GVFS.UnitTests.Mock.FileSystem
         }
 
         public bool HydrateFile(string fileName, byte[] buffer)
+        {
+            throw new NotSupportedException();
+        }
+
+        public unsafe void WriteFile(ITracer tracer, byte* originalData, long originalSize, string destination)
         {
             throw new NotSupportedException();
         }
