@@ -25,7 +25,7 @@ namespace GVFS.FunctionalTests.Tests
         public void InitControlRepo()
         {
             Directory.CreateDirectory(this.fastFetchControlRoot);
-            GitProcess.Invoke("C:\\", "clone -b " + Settings.Default.Commitish + " " + GVFSTestConfig.RepoToClone + " " + this.fastFetchControlRoot);
+            GitProcess.Invoke(this.fastFetchControlRoot, "clone -b " + Settings.Default.Commitish + " " + GVFSTestConfig.RepoToClone + " " + this.fastFetchControlRoot);
         }
 
         [SetUp]
