@@ -16,7 +16,6 @@ namespace GVFS.FunctionalTests.Tests
     [TestFixture]
     [Category(Categories.FastFetch)]
     [Category(Categories.FullSuiteOnly)]
-    [Category(Categories.MacTODO.M4)]
     public class FastFetchTests
     {
         private readonly string fastFetchRepoRoot = Settings.Default.FastFetchRoot;
@@ -476,16 +475,16 @@ namespace GVFS.FunctionalTests.Tests
         {
             args = args + " --verbose";
 
-            string fastfetch = Path.Combine(Settings.Default.CurrentDirectory, "fastfetch.exe");
+            string fastfetch = Path.Combine(Settings.Default.CurrentDirectory, "netcoreapp2.1", "fastfetch.dll");
             if (!File.Exists(fastfetch))
             {
-                fastfetch = "fastfetch.exe";
+                fastfetch = "fastfetch.dll";
             }
 
             Console.WriteLine($"Using {fastfetch}");
 
-            ProcessStartInfo processInfo = new ProcessStartInfo(fastfetch);
-            processInfo.Arguments = args;
+            ProcessStartInfo processInfo = new ProcessStartInfo("dotnet");
+            processInfo.Arguments = $"{fastfetch} {args}";
             processInfo.WorkingDirectory = this.fastFetchRepoRoot;
             processInfo.UseShellExecute = false;
             processInfo.RedirectStandardOutput = true;
