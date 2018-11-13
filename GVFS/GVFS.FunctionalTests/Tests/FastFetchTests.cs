@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace GVFS.FunctionalTests.Tests
@@ -45,13 +46,27 @@ namespace GVFS.FunctionalTests.Tests
         [TearDown]
         public void TearDownTests()
         {
-            CmdRunner.DeleteDirectoryWithUnlimitedRetries(this.fastFetchRepoRoot);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                CmdRunner.DeleteDirectoryWithUnlimitedRetries(this.fastFetchRepoRoot);
+            }
+            else
+            {
+                BashRunner.DeleteDirectoryWithUnlimitedRetries(this.fastFetchRepoRoot);
+            }
         }
 
         [OneTimeTearDown]
         public void DeleteControlRepo()
         {
-            CmdRunner.DeleteDirectoryWithUnlimitedRetries(this.fastFetchControlRoot);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                CmdRunner.DeleteDirectoryWithUnlimitedRetries(this.fastFetchRepoRoot);
+            }
+            else
+            {
+                BashRunner.DeleteDirectoryWithUnlimitedRetries(this.fastFetchRepoRoot);
+            }
         }
         
         [TestCase]
@@ -336,7 +351,7 @@ namespace GVFS.FunctionalTests.Tests
             // renamed:    foo.cpp\foo.cpp -> foo.cpp
             //   where the top level "foo.cpp" is a folder with a file, then becomes just a file
             //   note that folder\file names picked illustrate a real example
-            Path.Combine(this.fastFetchRepoRoot, "foo.cpp\\foo.cpp")
+            Path.Combine(this.fastFetchRepoRoot, "foo.cpp", "foo.cpp")
                 .ShouldBeAFile(FileSystemRunner.DefaultRunner);
 
             // Delta of interest - Check initial state
@@ -475,10 +490,18 @@ namespace GVFS.FunctionalTests.Tests
         {
             args = args + " --verbose";
 
-            string fastfetch = Path.Combine(Settings.Default.CurrentDirectory, "netcoreapp2.1", "fastfetch.dll");
-            if (!File.Exists(fastfetch))
+            string fastfetch;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                fastfetch = "fastfetch.dll";
+                fastfetch = Path.Combine(Settings.Default.CurrentDirectory, "netcoreapp2.1", "fastfetch.dll");
+                if (!File.Exists(fastfetch))
+                {
+                    fastfetch = "fastfetch.dll";
+                }
+            }
+            else
+            {
+                fastfetch = Path.Combine(Settings.Default.CurrentDirectory, "fastfetch.dll");
             }
 
             Console.WriteLine($"Using {fastfetch}");
