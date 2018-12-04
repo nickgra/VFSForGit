@@ -281,6 +281,8 @@ namespace GVFS.CommandLine
                 mountExecutableLocation = Path.Combine(ProcessHelper.GetCurrentProcessLocation(), "gvfs.mount");
             }
 
+            this.Output.WriteLine("About to start mount process");
+
             GVFSPlatform.Instance.StartBackgroundProcess(
                 mountExecutableLocation,
                 new[]
@@ -294,11 +296,15 @@ namespace GVFS.CommandLine
                     this.StartedByService.ToString()
                 });
 
+            this.Output.WriteLine("Started mount process, before connecting to pipe");
+
             if (GVFSPlatform.Instance.IsUnderConstruction)
             {
                 // TODO(Mac): figure out the timing issue here on connecting to the pipe
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
             }
+
+            this.Output.WriteLine("Got past scary timing issue pipe");
 
             return GVFSEnlistment.WaitUntilMounted(enlistment.EnlistmentRoot, this.Unattended, out errorMessage);
         }
